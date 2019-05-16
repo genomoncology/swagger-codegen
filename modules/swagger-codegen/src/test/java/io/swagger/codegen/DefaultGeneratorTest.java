@@ -20,6 +20,7 @@ import java.util.*;
 
 import static io.swagger.codegen.CodegenConstants.TEMPLATE_DIR;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -314,6 +315,27 @@ public class DefaultGeneratorTest {
 
         assertTrue(paramCollapseThreshold == 5, paramCollapseThreshold.toString());
 
+        ClientOptInput clientOptInput = new ClientOptInput().opts(new ClientOpts()).swagger(swagger).config(codegenConfig);
+
+        DefaultGenerator generator = new DefaultGenerator();
+        generator.opts(clientOptInput);
+
+        String tag = "Word";
+        Map<String, List<CodegenOperation>> paths = generator.processPaths(swagger.getPaths());
+        List<CodegenOperation> ops = paths.get(tag);
+        for (CodegenOperation op : ops) {
+            assertNull(op.collapsedParametersClassName);
+        }
+
+        generator.processOperations(codegenConfig, tag, ops, new ArrayList<>());
+
+        // An op has collapsedParametersClassName set if and only if param count is over the threshold
+        for (CodegenOperation op : ops) {
+            assertTrue((op.allParams.size() >= paramCollapseThreshold && op.collapsedParametersClassName != null)
+                    || (op.allParams.size() < paramCollapseThreshold && op.collapsedParametersClassName == null) );
+        }
+    }
+
     public void testResolveTagsAgainstSwaggerTagsDefinition() {
         final File output = folder.getRoot();
 
@@ -500,22 +522,8 @@ public class DefaultGeneratorTest {
 
         DefaultGenerator generator = new DefaultGenerator();
         generator.opts(clientOptInput);
-
-        String tag = "Word";
         Map<String, List<CodegenOperation>> paths = generator.processPaths(swagger.getPaths());
         assertEquals(3, paths.size());
-        List<CodegenOperation> ops = paths.get(tag);
-        for (CodegenOperation op : ops) {
-            assertNull(op.collapsedParametersClassName);
-        }
-
-        generator.processOperations(codegenConfig, tag, ops);
-
-        // An op has collapsedParametersClassName set if and only if param count is over the threshold
-        for (CodegenOperation op : ops) {
-            assertTrue((op.allParams.size() >= paramCollapseThreshold && op.collapsedParametersClassName != null)
-                    || (op.allParams.size() < paramCollapseThreshold && op.collapsedParametersClassName == null));
-        }
 
         List<String> sanitizedTags = Arrays.asList("Pet", "Store", "User");
         for (String tag : sanitizedTags) {

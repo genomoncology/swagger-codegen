@@ -682,28 +682,28 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
     @Override
     public String toDefaultValue(Property p) {
         if (p instanceof ArrayProperty) {
-//            return "null"; //TODO look here this is weird. Fatih set to use null instead of empty list?
-            final ArrayProperty ap = (ArrayProperty) p;
-            final String pattern;
-            if (fullJavaUtil) {
-                pattern = "new java.util.ArrayList<%s>()";
-            } else {
-                pattern = "new ArrayList<%s>()";
-            }
-            if (ap.getItems() == null) {
-                return null;
-            }
-
-            String typeDeclaration = getTypeDeclaration(ap.getItems());
-            Object java8obj = additionalProperties.get("java8");
-            if (java8obj != null) {
-                Boolean java8 = Boolean.valueOf(java8obj.toString());
-                if (java8 != null && java8) {
-                    typeDeclaration = "";
-                }
-            }
-
-            return String.format(pattern, typeDeclaration);
+            return "null"; //TODO look here this is weird. Fatih set to use null instead of empty list?
+//            final ArrayProperty ap = (ArrayProperty) p;
+//            final String pattern;
+//            if (fullJavaUtil) {
+//                pattern = "new java.util.ArrayList<%s>()";
+//            } else {
+//                pattern = "new ArrayList<%s>()";
+//            }
+//            if (ap.getItems() == null) {
+//                return null;
+//            }
+//
+//            String typeDeclaration = getTypeDeclaration(ap.getItems());
+//            Object java8obj = additionalProperties.get("java8");
+//            if (java8obj != null) {
+//                Boolean java8 = Boolean.valueOf(java8obj.toString());
+//                if (java8 != null && java8) {
+//                    typeDeclaration = "";
+//                }
+//            }
+//
+//            return String.format(pattern, typeDeclaration);
         } else if (p instanceof MapProperty) {
             final MapProperty ap = (MapProperty) p;
             final String pattern;
