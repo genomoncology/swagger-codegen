@@ -57,6 +57,8 @@ public class PerlClientCodegen extends DefaultCodegen implements CodegenConfig {
         apiDocTemplateFiles.put("api_doc.mustache", ".md");
         embeddedTemplateDir = templateDir = "perl";
 
+        // default HIDE_GENERATION_TIMESTAMP to true
+        hideGenerationTimestamp = Boolean.TRUE;
 
         setReservedWordsLowerCase(
                 Arrays.asList(
@@ -109,7 +111,8 @@ public class PerlClientCodegen extends DefaultCodegen implements CodegenConfig {
                 CodegenConstants.SORT_PARAMS_BY_REQUIRED_FLAG_DESC).defaultValue(Boolean.TRUE.toString()));
         cliOptions.add(CliOption.newBoolean(CodegenConstants.ENSURE_UNIQUE_PARAMS, CodegenConstants
                 .ENSURE_UNIQUE_PARAMS_DESC).defaultValue(Boolean.TRUE.toString()));
-
+        cliOptions.add(new CliOption(CodegenConstants.HIDE_GENERATION_TIMESTAMP, CodegenConstants.HIDE_GENERATION_TIMESTAMP_DESC)
+                .defaultValue(Boolean.TRUE.toString()));
     }
 
 
@@ -162,6 +165,9 @@ public class PerlClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     @Override
     public String escapeReservedWord(String name) {
+        if(this.reservedWordsMappings().containsKey(name)) {
+            return this.reservedWordsMappings().get(name);
+        }
         return "_" + name;
     }
 
@@ -396,7 +402,7 @@ public class PerlClientCodegen extends DefaultCodegen implements CodegenConfig {
 
     @Override
     public void setParameterExampleValue(CodegenParameter p) {
-        if (Boolean.TRUE.equals(p.isString) || Boolean.TRUE.equals(p.isBinary) || 
+        if (Boolean.TRUE.equals(p.isString) || Boolean.TRUE.equals(p.isBinary) ||
                 Boolean.TRUE.equals(p.isByteArray) || Boolean.TRUE.equals(p.isFile)) {
             p.example = "'" + p.example + "'";
         } else if (Boolean.TRUE.equals(p.isBoolean)) {
