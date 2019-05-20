@@ -81,6 +81,7 @@ public class {{classname}} {
     }
     {{/collapsedParametersClassName}}
 
+    {{#operation}}
     /**
      * Build call for {{operationId}}{{#allParams}}
      * @param {{paramName}} {{description}}{{#required}} (required){{/required}}{{^required}} (optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}{{/allParams}}
@@ -206,11 +207,13 @@ public class {{classname}} {
      * @see <a href="{{url}}">{{summary}} Documentation</a>
         {{/externalDocs}}
      */
-    {{#isDeprecated}}
-    @Deprecated
-    {{/isDeprecated}}
-    public {{#returnType}}{{{returnType}}} {{/returnType}}{{^returnType}}void {{/returnType}}{{operationId}}({{#allParams}}{{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) throws ApiException {
-        {{#returnType}}ApiResponse<{{{returnType}}}> {{localVariablePrefix}}resp = {{/returnType}}{{operationId}}WithHttpInfo({{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});{{#returnType}}
+    public {{#returnType}}{{{returnType}}} {{/returnType}}{{^returnType}}void {{/returnType}}{{operationId}}(
+            {{#collapsedParametersClassName}}{{collapsedParametersClassName}} params{{/collapsedParametersClassName}}
+            {{^collapsedParametersClassName}}{{#allParams}}{{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/collapsedParametersClassName}}
+            ) throws ApiException {
+        {{#returnType}}ApiResponse<{{{returnType}}}> {{localVariablePrefix}}resp = {{/returnType}}{{operationId}}WithHttpInfo(
+                {{#collapsedParametersClassName}}params{{/collapsedParametersClassName}}
+                {{^collapsedParametersClassName}}{{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/collapsedParametersClassName}});{{#returnType}}
         return {{localVariablePrefix}}resp.getData();{{/returnType}}
     }
 
@@ -231,8 +234,13 @@ public class {{classname}} {
     {{#isDeprecated}}
     @Deprecated
     {{/isDeprecated}}
-    public ApiResponse<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Void{{/returnType}}> {{operationId}}WithHttpInfo({{#allParams}}{{#useBeanValidation}}{{>beanValidationQueryParams}}{{/useBeanValidation}}{{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) throws ApiException {
-        com.squareup.okhttp.Call {{localVariablePrefix}}call = {{operationId}}ValidateBeforeCall({{#allParams}}{{paramName}}, {{/allParams}}null, null);
+    public ApiResponse<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Void{{/returnType}}> {{operationId}}WithHttpInfo(
+            {{#collapsedParametersClassName}}{{collapsedParametersClassName}} params{{/collapsedParametersClassName}}
+            {{^collapsedParametersClassName}}{{#allParams}}{{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/collapsedParametersClassName}}
+            ) throws ApiException {
+        com.squareup.okhttp.Call {{localVariablePrefix}}call = {{operationId}}Call(
+                {{#collapsedParametersClassName}}params, {{/collapsedParametersClassName}}
+                {{^collapsedParametersClassName}}{{#allParams}}{{paramName}}, {{/allParams}}{{/collapsedParametersClassName}}null, null);
         {{#returnType}}Type {{localVariablePrefix}}localVarReturnType = new TypeToken<{{{returnType}}}>(){}.getType();
         return {{localVariablePrefix}}apiClient.execute({{localVariablePrefix}}call, {{localVariablePrefix}}localVarReturnType);{{/returnType}}{{^returnType}}return {{localVariablePrefix}}apiClient.execute({{localVariablePrefix}}call);{{/returnType}}
     }
@@ -252,11 +260,10 @@ public class {{classname}} {
      * @see <a href="{{url}}">{{summary}} Documentation</a>
         {{/externalDocs}}
      */
-    {{#isDeprecated}}
-    @Deprecated
-    {{/isDeprecated}}
-    public com.squareup.okhttp.Call {{operationId}}Async({{#allParams}}{{{dataType}}} {{paramName}}, {{/allParams}}final ApiCallback<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Void{{/returnType}}> {{localVariablePrefix}}callback) throws ApiException {
-
+    public com.squareup.okhttp.Call {{operationId}}Async(
+            {{#collapsedParametersClassName}}{{collapsedParametersClassName}} params, {{/collapsedParametersClassName}}
+            {{^collapsedParametersClassName}}{{#allParams}}{{{dataType}}} {{paramName}}, {{/allParams}}{{/collapsedParametersClassName}}
+            final ApiCallback<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Void{{/returnType}}> {{localVariablePrefix}}callback) throws ApiException {
         ProgressResponseBody.ProgressListener progressListener = null;
         ProgressRequestBody.ProgressRequestListener progressRequestListener = null;
 
@@ -276,7 +283,9 @@ public class {{classname}} {
             };
         }
 
-        com.squareup.okhttp.Call {{localVariablePrefix}}call = {{operationId}}ValidateBeforeCall({{#allParams}}{{paramName}}, {{/allParams}}progressListener, progressRequestListener);
+        com.squareup.okhttp.Call {{localVariablePrefix}}call = {{operationId}}Call(
+                {{#collapsedParametersClassName}}params, {{/collapsedParametersClassName}}
+                {{^collapsedParametersClassName}}{{#allParams}}{{paramName}}, {{/allParams}}{{/collapsedParametersClassName}}progressListener, progressRequestListener);
         {{#returnType}}Type {{localVariablePrefix}}localVarReturnType = new TypeToken<{{{returnType}}}>(){}.getType();
         {{localVariablePrefix}}apiClient.executeAsync({{localVariablePrefix}}call, {{localVariablePrefix}}localVarReturnType, {{localVariablePrefix}}callback);{{/returnType}}{{^returnType}}{{localVariablePrefix}}apiClient.executeAsync({{localVariablePrefix}}call, {{localVariablePrefix}}callback);{{/returnType}}
         return {{localVariablePrefix}}call;
